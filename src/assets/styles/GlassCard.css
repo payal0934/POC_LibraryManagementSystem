@@ -1,0 +1,164 @@
+
+.glass-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  animation: bgZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgZoom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+.glass-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  backdrop-filter: blur(2px);
+}
+
+
+.glass-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
+  min-width: 350px;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  color: #fff;
+  text-align: center;
+
+
+  opacity: 0;
+  transform: translateY(50px);
+  animation: fadeInUp 1s forwards;
+  animation-delay: 0.2s;
+}
+
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glass-card h1,
+.glass-card h3 {
+  font-weight: 700;
+  text-shadow: 1px 1px 8px rgba(0,0,0,0.6);
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeText 1s forwards;
+}
+
+.glass-card h1 { font-size: 2.5rem; animation-delay: 0.4s; }
+.glass-card h3 { font-size: 2rem; animation-delay: 0.3s; }
+
+
+.glass-card p {
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeText 1s forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeText {
+  to { opacity: 1; }
+}
+
+.glass-card .form-label {
+  color: #fff;
+  font-weight: 500;
+}
+
+.glass-card .form-control,
+.glass-card .form-select {
+  border-radius: 8px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+}
+
+.glass-card .form-control::placeholder {
+  color: #e5e7eb;
+}
+
+.glass-card .form-select option {
+  background: #1f2937;
+  color: #fff;
+}
+
+
+.glass-btn-primary,
+.glass-btn-secondary {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  padding: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.glass-btn-primary {
+  background-color: #fbbf24;
+  color: #1f2937;
+}
+
+.glass-btn-primary:hover {
+  background-color: #f59e0b;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.5);
+}
+
+
+.glass-btn-secondary {
+  background-color: rgba(255,255,255,0.2);
+  color: #f9fafb;
+}
+
+.glass-btn-secondary:hover {
+  background-color: rgba(255,255,255,0.3);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(255,255,255,0.3);
+}
+
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  animation: floatBubble 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes floatBubble {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(15px); }
+}
+

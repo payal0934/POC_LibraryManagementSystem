@@ -1,0 +1,162 @@
+
+
+/* Apply only when on the home page */
+
+/* Disable scroll only on home page */
+body.no-scroll {
+  overflow: hidden;
+}
+
+
+
+
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  animation: bgZoom 20s ease-in-out infinite alternate;
+}
+
+/* Subtle background zoom animation */
+@keyframes bgZoom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Dark overlay */
+.home-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+  backdrop-filter: blur(2px);
+}
+
+/* Glassmorphism card */
+.home-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
+  min-width: 350px;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  color: #fff;
+  text-align: center;
+
+  /* Slide & fade animation */
+  opacity: 0;
+  transform: translateY(50px);
+  animation: fadeInUp 1s forwards;
+  animation-delay: 0.3s;
+}
+
+/* Card fade-in slide-up */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title */
+.home-card h1 {
+  font-weight: 700;
+  font-size: 2.8rem;
+  text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.6);
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeText 1s forwards;
+  animation-delay: 0.5s;
+}
+
+/* Subtitle */
+.home-card p {
+  font-size: 1.3rem;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeText 1s forwards;
+  animation-delay: 0.7s;
+}
+
+/* Text fade animation */
+@keyframes fadeText {
+  to { opacity: 1; }
+}
+
+/* Button container */
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  opacity: 0;
+  animation: fadeInUp 1s forwards;
+  animation-delay: 0.9s;
+}
+
+/* Buttons with hover floating effect */
+.home-btn-login,
+.home-btn-signup {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  padding: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-btn-login {
+  background-color: #fbbf24;
+  color: #1f2937;
+}
+
+.home-btn-login:hover {
+  background-color: #f59e0b;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.5);
+}
+
+.home-btn-signup {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.home-btn-signup:hover {
+  background-color: #1f2937;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(55, 65, 81, 0.5);
+}
+
+/* Optional floating bubble animation */
+.home-card::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  animation: floatBubble 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes floatBubble {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(15px); }
+}
