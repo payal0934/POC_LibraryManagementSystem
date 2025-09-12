@@ -4,32 +4,35 @@ import { AuthContext } from "../Auth/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../User/ReturnBook.css"
-import "../User/BorrowdHistory.css"
+import "../User/ReturnBook.css";
+import "../User/BorrowdHistory.css";
+
 const BookHistory = () => {
   const { user } = useContext(AuthContext);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-const fetchHistory = async () => {
-  if (!user?.userId) return;
+  const fetchHistory = async () => {
+    if (!user?.userId) {
+      console.log("User not available yet");
+      return;
+    }
 
-  try {
-    const res = await axios.get(
-      `http://localhost:8080/api/library/history/${user.userId}`
-    );
-    console.log("History Data:", res.data);
+    try {
+      const res = await axios.get(
+        `http://localhost:8080/api/library/history/${user.userId}`
+      );
+      console.log("History Data:", res.data);
 
-    // Adjust for backend structure
-    setHistory(Array.isArray(res.data.data) ? res.data.data : []);
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to fetch borrow history");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      // Access res.data.data because the response has { status, message, data }
+      setHistory(Array.isArray(res.data.data) ? res.data.data : []);
+    } catch (err) {
+      console.error("Error fetching history:", err);
+      toast.error("Failed to fetch borrow history");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchHistory();
@@ -60,12 +63,24 @@ const fetchHistory = async () => {
                 <td>{record.bookName}</td>
                 <td>
                   {record.borrowedDate
-                    ? new Date(record.borrowedDate).toLocaleDateString()
+                    ? new Date(record.borrowedDate).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                     : "N/A"}
                 </td>
                 <td>
                   {record.returnedDate
-                    ? new Date(record.returnedDate).toLocaleDateString()
+                    ? new Date(record.returnedDate).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                     : "Not Returned"}
                 </td>
                 <td>
