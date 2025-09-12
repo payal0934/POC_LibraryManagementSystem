@@ -12,19 +12,22 @@ const ReturnBook = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch borrowed books
-  const fetchBorrowedBooks = async () => {
-    if (!user?.userId) return;
+ const fetchBorrowedBooks = async () => {
+  if (!user?.userId) return;
 
-    try {
-      const res = await api.get(`/api/library/borrowed/${user.userId}`);
-      setBorrowedBooks(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error(err);
-      toast.error(" Failed to fetch borrowed books");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await api.get(`/api/library/borrowed/${user.userId}`);
+
+    // if backend wraps result in { data: [...] }
+    setBorrowedBooks(Array.isArray(res.data.data) ? res.data.data : []);
+  } catch (err) {
+    console.error(err);
+    toast.error("❌ Failed to fetch borrowed books");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchBorrowedBooks();

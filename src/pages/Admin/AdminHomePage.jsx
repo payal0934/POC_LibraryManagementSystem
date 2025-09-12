@@ -5,9 +5,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
+
 // Replace with your local images
 import img1 from "../../assets/viewall.jpg";
-// import img2 from "../../assets/delete.jpg";
+import img4 from "../../assets/img4.jpg";
 import img3 from "../../assets/addbook.jpg";
 import { FaArrowRight } from "react-icons/fa";
 
@@ -18,12 +19,12 @@ const cardData = [
     image: img1,
     path: "/view-books",
   },
-  // {
-  //   title: "Delete Books",
-  //   description: "Search and delete books from the library",
-  //   image: img2,
-  //   path: "/delete-book",
-  // },
+  {
+    title: "Manage Users",
+    description: "View and manage registered users.",
+    image: img4,
+    path: "/view-users", // 👉 this should point to your ViewAllUsers.jsx route
+  },
   {
     title: "Add to Library",
     description: "Add fresh titles to the collection.",

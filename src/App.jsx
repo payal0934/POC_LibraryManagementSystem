@@ -22,7 +22,7 @@ import ProtectedLayout from "./pages/Auth/ProtectedLayout";
 import Sidebar from "./components/Sidebar";
 // import "./components/Navbar.css"; 
 // import Profile from "./components/Profile";
-
+import SeeAllUsers from "./pages/Admin/SeeAllUsers";
 
 function App() {
   const location = useLocation();
@@ -51,8 +51,7 @@ function App() {
             {/* Admin */}
             <Route path="/admin" element={<AdminHomepage />} />
             <Route path="/view-books" element={<ViewAllBooks />} />
-            {/* <Route path="/delete-book" element={<DeleteBook />} /> */}
-            <Route path="/add-book" element={<AddBook />} />
+           <Route path="/view-users" element={<SeeAllUsers/>} />  <Route path="/add-book" element={<AddBook />} />
 
             {/* User */}
             <Route path="/user" element={<UserHomePage />} />

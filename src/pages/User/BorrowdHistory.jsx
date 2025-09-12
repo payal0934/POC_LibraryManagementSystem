@@ -11,22 +11,25 @@ const BookHistory = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchHistory = async () => {
-    if (!user?.userId) return;
+const fetchHistory = async () => {
+  if (!user?.userId) return;
 
-    try {
-      const res = await axios.get(
-        `http://localhost:8080/api/library/history/${user.userId}`
-      );
-      console.log("History Data:", res.data);
-      setHistory(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to fetch borrow history");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await axios.get(
+      `http://localhost:8080/api/library/history/${user.userId}`
+    );
+    console.log("History Data:", res.data);
+
+    // Adjust for backend structure
+    setHistory(Array.isArray(res.data.data) ? res.data.data : []);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to fetch borrow history");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchHistory();

@@ -22,42 +22,43 @@ const Login = ({ goBack }) => {
       return;
     }
 
-    try {
-      const res = await fetch(
-        `http://localhost:8080/api/users/login?userName=${username}&password=${password}&role=${role}`,
-        { method: "POST" }
-      );
+  try {
+    const res = await fetch(
+      `http://localhost:8080/api/users/login?userName=${username}&password=${password}&role=${role}`,
+      { method: "POST" }
+    );
 
-      if (res.ok) {
-        const userData = await res.json(); // { userId, userName, role }
-        console.log("Backend login response:", userData);
+    const data = await res.json();
+    console.log("Backend login response:", data);
 
-        toast.success(" Login successful!");
+    if (data.status === "success") {
+      toast.success(data.message || "Login successful!");
 
-        //  store user in AuthContext + localStorage
-        login({
-          userId: userData.userId,
-          userName: userData.userName,
-          role: userData.role,
-        });
+      // backend puts user info inside data.data
+      const userData = data.data;
+
+      login({
+        userId: userData.userId,
+        userName: userData.userName,
+        role: userData.role,
+      });
 
         //  redirect only after backend validation
-        if (userData.role === "admin") {
-          navigate("/admin");
-        } else if (userData.role === "user") {
-          navigate("/user");
-        } else {
-          toast.error(" Invalid role received from backend");
-        }
+         if (userData.role === "admin") {
+        navigate("/admin");
+      } else if (userData.role === "user") {
+        navigate("/user");
       } else {
-        const err = await res.text();
-        toast.error(err || " Invalid login credentials");
+        toast.error("Invalid role received from backend");
       }
-    } catch (err) {
-      toast.error(" Server not reachable");
-      console.error(err);
+    } else {
+      toast.error(data.message || "Invalid login credentials");
     }
-  };
+  } catch (err) {
+    toast.error("Server not reachable");
+    console.error(err);
+  }
+};
 
   return (
     <div
