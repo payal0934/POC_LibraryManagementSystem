@@ -1,6 +1,7 @@
 package com.sb.DTO;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 public class LibraryDTO {
     private int id;
@@ -9,8 +10,9 @@ public class LibraryDTO {
     private int bookId;
     private String bookName;  
     private boolean returned;
-    private Date borrowedDate;
-    private Date returnedDate;
+    private LocalDateTime borrowedDate;
+    private LocalDateTime returnedDate;
+
 
     public LibraryDTO() {}
 
@@ -51,16 +53,21 @@ public class LibraryDTO {
     public void setReturned(boolean returned) {
         this.returned = returned;
     }
-    public Date getBorrowedDate() {
-        return borrowedDate;
-    }
-    public void setBorrowedDate(Date borrowedDate) {
-        this.borrowedDate = borrowedDate;
-    }
-    public Date getReturnedDate() {
-        return returnedDate;
-    }
-    public void setReturnedDate(Date returnedDate) {
-        this.returnedDate = returnedDate;
-    }
+
+	public LocalDateTime getBorrowedDate() {
+		return borrowedDate;
+	}
+
+	public void setBorrowedDate(LocalDateTime borrowedDate) {
+		this.borrowedDate = borrowedDate;
+	}
+
+	public LocalDateTime getReturnedDate() {
+		return returnedDate;
+	}
+
+	public void setReturnedDate(LocalDateTime returnedDate) {
+		this.returnedDate = returnedDate;
+	}
+
 }

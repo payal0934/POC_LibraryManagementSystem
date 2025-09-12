@@ -2,6 +2,7 @@ package com.sb.EntityManager;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
@@ -26,10 +27,10 @@ public class LibraryEntity {
 
 //    @Column(name = "borrowed_date", nullable = true)
     @Column(name = "borrowed_date", nullable = false)
-    private Date borrowedDate;
+    private LocalDateTime  borrowedDate;
 
     @Column(name = "returned_date")
-    private Date returnedDate;
+    private LocalDateTime  returnedDate;
 
     public LibraryEntity() {}
 
@@ -39,8 +40,7 @@ public class LibraryEntity {
         entry.setUser(user);
         entry.setBook(book);
         entry.setReturned(false); // not returned yet
-        Date today = Date.valueOf(LocalDate.now());
-        entry.setBorrowedDate(today);
+        entry.setBorrowedDate(LocalDateTime.now()); // current date and time
         entry.setReturnedDate(null); // not returned yet
         return entry;
     }
@@ -48,8 +48,9 @@ public class LibraryEntity {
     // ================== Return ==================
     public void returnBook() {
         this.setReturned(true); // mark as returned
-        this.returnedDate = Date.valueOf(LocalDate.now()); // set return date as today
+        this.returnedDate = LocalDateTime.now(); // set return date-time as now
     }
+
 
     // ================== Getters & Setters ==================
     public int getId() {
@@ -84,19 +85,21 @@ public class LibraryEntity {
         this.returned = returned;
     }
 
-    public Date getBorrowedDate() {
-        return borrowedDate;
-    }
+	public LocalDateTime getBorrowedDate() {
+		return borrowedDate;
+	}
 
-    public void setBorrowedDate(Date borrowedDate) {
-        this.borrowedDate = borrowedDate;
-    }
+	public void setBorrowedDate(LocalDateTime borrowedDate) {
+		this.borrowedDate = borrowedDate;
+	}
 
-    public Date getReturnedDate() {
-        return returnedDate;
-    }
+	public LocalDateTime getReturnedDate() {
+		return returnedDate;
+	}
 
-    public void setReturnedDate(Date returnedDate) {
-        this.returnedDate = returnedDate;
-    }
+	public void setReturnedDate(LocalDateTime returnedDate) {
+		this.returnedDate = returnedDate;
+	}
+
+
 }

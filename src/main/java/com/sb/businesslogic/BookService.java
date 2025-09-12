@@ -91,7 +91,7 @@ public class BookService {
         record.setBook(book);
         record.setUser(userOpt.get());
         record.setReturned(false);
-        record.setBorrowedDate(java.sql.Date.valueOf(java.time.LocalDate.now()));
+        record.setBorrowedDate(java.time.LocalDateTime.now());
         record.setReturnedDate(null);
         libraryRepository.save(record);
 
@@ -108,7 +108,7 @@ public class BookService {
         if (recordOpt.isPresent()) {
             LibraryEntity record = recordOpt.get();
             record.setReturned(true);
-            record.setReturnedDate(java.sql.Date.valueOf(java.time.LocalDate.now()));
+            record.setReturnedDate(java.time.LocalDateTime.now()); // <-- Corrected here
             libraryRepository.save(record);
 
             BookEntity book = record.getBook();
@@ -119,6 +119,7 @@ public class BookService {
         }
         return false;
     }
+
 
     public List<BookEntity> getBorrowedBooksByUser(int userId) {
         List<LibraryEntity> borrowedRecords = libraryRepository.findByUser_UserIdAndReturnedFalse(userId);
