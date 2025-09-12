@@ -1,14 +1,12 @@
-
-
+// src/pages/BookHistory.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../Auth/AuthContext";
-import { toast, ToastContainer } from "react-toastify";
+import axios from "axios";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import api from "../../api/axios";
-import "../User/ReturnBook.css";  // Reuse the same CSS file
+import "../User/ReturnBook.css"
 import "../User/BorrowdHistory.css"
-
-const BorrowdHistory = () => {
+const BookHistory = () => {
   const { user } = useContext(AuthContext);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,12 +15,14 @@ const BorrowdHistory = () => {
     if (!user?.userId) return;
 
     try {
-      const res = await api.get(`/api/books/history/${user.userId}`);
-      console.log("History Data:", res.data); // Debugging line
+      const res = await axios.get(
+        `http://localhost:8080/api/library/history/${user.userId}`
+      );
+      console.log("History Data:", res.data);
       setHistory(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
-      toast.error(" Failed to fetch borrow history");
+      toast.error("Failed to fetch borrow history");
     } finally {
       setLoading(false);
     }
@@ -33,44 +33,54 @@ const BorrowdHistory = () => {
   }, [user]);
 
   if (!user) return <p>Loading user info...</p>;
-  if (loading) return <p>Loading borrow history...</p>;
-  if (history.length === 0) return <p className="text-center mt-4">No borrow history found.</p>;
+  if (loading) return <p>Loading history...</p>;
 
   return (
     <div className="returnbook-page">
-      <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="returnbook-title">📚 Borrow History</h2>
+      <h2 className="returnbook-title">📖 Book History</h2>
 
-      <table className="returnbook-table">
-        <thead>
-          <tr>
-            <th>Book Name</th>
-            <th>Borrowed</th>
-            <th>Returned</th>
-          </tr>
-        </thead>
-        <tbody>
-          {history.map((record) => (
-            <tr key={record.id}>
-              <td>{record.book ? record.book.bookName : "Unknown"}</td>
-              <td>
-                {record.borrowedDate
-                  ? new Date(record.borrowedDate).toLocaleDateString()
-                  : "N/A"}
-              </td>
-              <td>
-                {record.returnedDate
-                  ? new Date(record.returnedDate).toLocaleDateString()
-                  : "Not returned yet"}
-              </td>
+      {history.length === 0 ? (
+        <p className="empty-msg">No history available.</p>
+      ) : (
+        <table className="returnbook-table">
+          <thead>
+            <tr>
+              <th>Book</th>
+              <th>Borrow Date</th>
+              <th>Return Date</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {history.map((record, index) => (
+              <tr key={index}>
+                <td>{record.bookName}</td>
+                <td>
+                  {record.borrowedDate
+                    ? new Date(record.borrowedDate).toLocaleDateString()
+                    : "N/A"}
+                </td>
+                <td>
+                  {record.returnedDate
+                    ? new Date(record.returnedDate).toLocaleDateString()
+                    : "Not Returned"}
+                </td>
+                <td>
+                  <span
+                    className={`status-badge ${
+                      record.returnedDate ? "returned" : "borrowed"
+                    }`}
+                  >
+                    {record.returnedDate ? "Returned" : "Borrowed"}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
 
-export default BorrowdHistory;
-
-
+export default BookHistory;
