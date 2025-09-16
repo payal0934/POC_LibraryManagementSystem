@@ -1,8 +1,12 @@
 package com.sb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.sb.EntityManager.BookEntity;
 import com.sb.EntityManager.LibraryEntity;
 import com.sb.businesslogic.BookService;
@@ -10,6 +14,9 @@ import com.sb.businesslogic.LibraryService;
 
 import com.sb.businesslogic.LibraryService;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +28,8 @@ import com.sb.DTO.LibraryDTO;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+	
+
 
     private final BookService bookService;
     @Autowired
@@ -39,17 +48,28 @@ public class BookController {
 //    }
     
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse<BookDTO>> addBook(@RequestBody BookEntity book) {
-        BookEntity createdBook = bookService.addBook(book);
-        BookDTO bookDTO = bookService.convertToDto(createdBook);
-        return ResponseEntity.ok(new ApiResponse<>("success", "Book added successfully", bookDTO));
+    public ResponseEntity<ApiResponse<BookDTO>> addBook(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("title") String title,
+            @RequestParam("author") String author,
+            @RequestParam("isbn") long isbn,
+            @RequestParam("category") String category,
+            @RequestParam("count") Integer bookCount) {
+
+        try {
+            BookEntity createdBook = bookService.addBookWithImage(file, title, author, isbn, category, bookCount);
+            BookDTO bookDTO = bookService.convertToDto(createdBook);
+
+            return ResponseEntity.ok(new ApiResponse<>("success", "Book added successfully", bookDTO));
+        } catch (Exception e) {
+            e.printStackTrace();  // This will print the exact error in console
+            return ResponseEntity.status(500)
+                                 .body(new ApiResponse<>("error", "Book creation failed: " + e.getMessage(), null));
+        }
+
     }
 
-    
-    
-    
-    
-    
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<BookDTO> updateBook(@PathVariable int id, @RequestBody BookEntity bookDetails) {

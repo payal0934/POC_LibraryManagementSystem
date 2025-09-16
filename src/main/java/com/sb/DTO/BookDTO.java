@@ -7,19 +7,48 @@ public class BookDTO {
     private String author;
     private long isbn;
     private String bookCategory;
-
+    private String imageUrl; 
+    
+ 
     public BookDTO() {}
 
-    public BookDTO(int bookId, String bookName, int bookCount, String author, long isbn, String bookCategory) {
-        this.bookId = bookId;
-        this.bookName = bookName;
-        this.bookCount = bookCount;
-        this.author = author;
-        this.isbn = isbn;
-        this.bookCategory = bookCategory;
-    }
+   
 
-    // Getters and Setters
+
+
+	public BookDTO(int bookId, String bookName, int bookCount, String author, long isbn, String bookCategory,
+			String imageUrl) {
+		super();
+		this.bookId = bookId;
+		this.bookName = bookName;
+		this.bookCount = bookCount;
+		this.author = author;
+		this.isbn = isbn;
+		this.bookCategory = bookCategory;
+		this.imageUrl = imageUrl;
+	}
+
+
+
+
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+
+
+
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+
+
+
+
+	// Getters and Setters
     public int getBookId() {
         return bookId;
     }

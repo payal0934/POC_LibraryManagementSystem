@@ -1,10 +1,14 @@
 package com.sb.businesslogic;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sb.DTO.BookDTO;
 import com.sb.EntityManager.BookEntity;
@@ -32,6 +36,33 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    public BookEntity addBookWithImage(MultipartFile file, String title, String author,
+            long isbn, String category, Integer bookCount) throws Exception {
+
+String uploadDir = "Uploads/Images/";
+String fileName = file.getOriginalFilename(); // ✅ use only original file name
+
+Path path = Paths.get(uploadDir + fileName);
+Files.createDirectories(path.getParent());
+Files.write(path, file.getBytes());
+
+// Store only filename in DB
+String imageUrl = fileName;
+
+BookEntity book = new BookEntity();
+book.setBookName(title);
+book.setAuthor(author);
+book.setIsbn(isbn);
+book.setBookCategory(category);
+book.setBookCount(bookCount);
+book.setImageUrl(imageUrl);
+
+return addBook(book);
+}
+
+
+
+    
     public List<BookEntity> getAllBooks() {
         return bookRepository.findByBookCountGreaterThan(0);
     }
@@ -44,19 +75,16 @@ public class BookService {
         return libraryRepository.findByUser_UserId(userId);
     }
 
-    
-    public BookDTO convertToDto(BookEntity book)
-    {
-    	BookDTO dto=new BookDTO();
-    	dto.setBookId(book.getBookId());
-    	dto.setBookName(book.getBookName());
-    	dto.setBookCount(book.getBookCount());
-    	dto.setAuthor(book.getAuthor());
-    	dto.setIsbn(book.getIsbn());
-    	dto.setBookCategory(book.getBookCategory());
-    	
-    	return dto;   	
-    	
+    public BookDTO convertToDto(BookEntity book) {
+        BookDTO dto = new BookDTO();
+        dto.setBookId(book.getBookId());
+        dto.setBookName(book.getBookName());
+        dto.setBookCount(book.getBookCount());
+        dto.setAuthor(book.getAuthor());
+        dto.setIsbn(book.getIsbn());
+        dto.setBookCategory(book.getBookCategory());
+        dto.setImageUrl(book.getImageUrl()); // ✅
+        return dto;
     }
     
     
@@ -69,10 +97,12 @@ public class BookService {
         book.setBookCount(bookDetails.getBookCount());
         book.setAuthor(bookDetails.getAuthor());
         book.setIsbn(bookDetails.getIsbn());
-        book.setBookCategory(bookDetails.getBookCategory()); // ✅ update category
+        book.setBookCategory(bookDetails.getBookCategory());
+        book.setImageUrl(bookDetails.getImageUrl()); // ✅ save image URL
 
         return bookRepository.save(book);
     }
+
 
     public String borrowBook(int bookId, int userId) {
         Optional<BookEntity> bookOpt = bookRepository.findById(bookId);

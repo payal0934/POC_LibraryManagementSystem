@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -30,18 +29,23 @@ public class BookEntity {
     @Column(nullable = true)
     private String bookCategory;
 
+    // ✅ New field for image URL
+    @Column(name = "imageUrl",nullable = true)
+    private String imageUrl;
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<LibraryEntity> borrowRecords = new ArrayList<>();
 
     public BookEntity() {}
 
-    public BookEntity(String bookName, int bookCount, String author, long isbn, String bookCategory) {
+    public BookEntity(String bookName, int bookCount, String author, long isbn, String bookCategory, String imageUrl) {
         this.bookName = bookName;
         this.bookCount = bookCount;
         this.author = author;
         this.isbn = isbn;
         this.bookCategory = bookCategory;
+        this.imageUrl = imageUrl;
     }
 
     // Getters and Setters
@@ -62,6 +66,9 @@ public class BookEntity {
 
     public String getBookCategory() { return bookCategory; }
     public void setBookCategory(String bookCategory) { this.bookCategory = bookCategory; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public List<LibraryEntity> getBorrowRecords() { return borrowRecords; }
     public void setBorrowRecords(List<LibraryEntity> borrowRecords) { this.borrowRecords = borrowRecords; }
