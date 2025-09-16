@@ -4,7 +4,6 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../User/BorrowBook.css";
-import bookImages from "../../utils/BookImages";
 import { FaTrash } from "react-icons/fa";
 
 const ViewAllBooks = () => {
@@ -12,21 +11,19 @@ const ViewAllBooks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const assignImagesToBooks = (books, images) => {
-    const shuffledImages = [...images].sort(() => 0.5 - Math.random());
-    return books.map((book, index) => ({
-      ...book,
-      image: shuffledImages[index % shuffledImages.length],
-    }));
+  // 🔑 Use imageUrl from DB directly if available
+  const getImageForBook = (book) => {
+    return book.imageUrl?.startsWith("http")
+      ? book.imageUrl
+      : `http://localhost:8080/Uploads/Images/${book.imageUrl}`;
   };
 
   const fetchBooks = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/books");
-      const booksWithImages = assignImagesToBooks(res.data, bookImages);
-      setBooks(booksWithImages);
+      setBooks(res.data.data || res.data);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error fetching books:", err);
       toast.error("❌ Failed to fetch books");
     }
   };
@@ -42,6 +39,7 @@ const ViewAllBooks = () => {
       toast.success("✅ Book deleted successfully");
       setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
     } catch (err) {
+      console.error("❌ Error deleting book:", err);
       toast.error(err.response?.data || "❌ Error deleting book");
     }
   };
@@ -50,10 +48,10 @@ const ViewAllBooks = () => {
     fetchBooks();
   }, []);
 
-  // Filter + search logic
+  // Filter + search
   const filteredBooks = books.filter((book) => {
     const matchesSearch = book.bookName
-      .toLowerCase()
+      ?.toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesCategory =
       selectedCategory === "All" || book.bookCategory === selectedCategory;
@@ -65,7 +63,7 @@ const ViewAllBooks = () => {
       <ToastContainer position="top-right" autoClose={3000} />
       <h2 className="bb-page-title">📚 All Books</h2>
 
-      {/* 🔍 Search + Filter */}
+      {/* Search + Filter */}
       <div className="bb-filters">
         <input
           type="text"
@@ -85,27 +83,33 @@ const ViewAllBooks = () => {
           <option value="Non-fiction">Non-fiction</option>
           <option value="Science">Science</option>
           <option value="History">History</option>
-          {/* Add more categories as per your DB */}
         </select>
       </div>
 
-      {/* Book Cards */}
-      <div className="bb-cards-container">
+      {/* Masonry Layout (same as BorrowBook) */}
+      <div className="bb-masonry">
         {filteredBooks.length > 0 ? (
           filteredBooks.map((book) => (
-            <div key={book.bookId} className="bb-card">
+            <div key={book.bookId} className="bb-masonry-card">
               <img
-                src={book.image || "/default-book.jpg"}
+                src={getImageForBook(book)}
                 alt={book.bookName}
                 className="bb-card-img"
+                onError={(e) => {
+                  console.error(
+                    `❌ Image not found for bookId=${book.bookId} (${book.bookName}), using default`
+                  );
+                  e.target.src =
+                    "http://localhost:8080/Uploads/Images/default.jpg";
+                }}
               />
+
               <div className="bb-card-overlay">
                 <h3>{book.bookName}</h3>
                 <p>Author: {book.author}</p>
                 <p>Available: {book.bookCount}</p>
                 <p>Category: {book.bookCategory}</p>
 
-                {/* Delete button bottom-right */}
                 <button
                   className="bb-delete-btn"
                   onClick={() => handleDelete(book.bookId)}

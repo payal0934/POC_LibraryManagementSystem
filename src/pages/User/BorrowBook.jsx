@@ -5,7 +5,6 @@ import { AuthContext } from "../Auth/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../User/BorrowBook.css";
-import bookImages from "../../utils/BookImages";
 
 const BorrowBook = () => {
   const { user } = useContext(AuthContext);
@@ -18,32 +17,25 @@ const BorrowBook = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Assign random images to books
-  const assignImagesToBooks = (books, images) => {
-    const shuffledImages = [...images].sort(() => 0.5 - Math.random());
-    return books.map((book, index) => ({
-      ...book,
-      image: shuffledImages[index % shuffledImages.length],
-    }));
-  };
-
-  // Fetch all books
+  // Fetch books
   const fetchBooks = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/books");
-      const bookArray = res.data.data; // use backend response
-      const booksWithImages = assignImagesToBooks(bookArray, bookImages);
-      setBooks(booksWithImages);
+      const bookArray = res.data.data || [];
+      setBooks(bookArray);
 
-      const uniqueCategories = ["All", ...new Set(bookArray.map((b) => b.bookCategory))];
+      const uniqueCategories = [
+        "All",
+        ...new Set(bookArray.map((b) => b.bookCategory)),
+      ];
       setCategories(uniqueCategories);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error fetching books:", err);
       toast.error("❌ Failed to fetch books");
     }
   };
 
-  // Fetch borrowed books for current user
+  // Fetch borrowed books
   const fetchBorrowedBooks = async () => {
     if (!currentUserId) return;
     try {
@@ -52,45 +44,35 @@ const BorrowBook = () => {
       );
       setBorrowedBooks(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error fetching borrowed books:", err);
       toast.error("❌ Failed to fetch borrowed books");
     }
   };
-useEffect(() => {
-  const fetchAllData = async () => {
-    if (!user) return;
 
-    setLoading(true);
-    try {
-      const booksRes = await axios.get("http://localhost:8080/api/books");
-      const bookArray = booksRes.data.data;
-      const booksWithImages = assignImagesToBooks(bookArray, bookImages);
-      setBooks(booksWithImages);
+  // Load books + borrowed books
+  useEffect(() => {
+    const fetchAllData = async () => {
+      if (!user) return;
 
-      const uniqueCategories = ["All", ...new Set(bookArray.map((b) => b.bookCategory))];
-      setCategories(uniqueCategories);
+      setLoading(true);
+      try {
+        await fetchBooks();
+        await fetchBorrowedBooks();
+      } catch (err) {
+        console.error("❌ Error fetching data:", err);
+        toast.error("❌ Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      const borrowedRes = await axios.get(
-        `http://localhost:8080/api/library/borrowed/${user.userId}`
-      );
-      setBorrowedBooks(Array.isArray(borrowedRes.data) ? borrowedRes.data : []);
-    } catch (err) {
-      console.error(err);
-      toast.error("❌ Failed to fetch data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchAllData();
-}, [user]);
-
+    fetchAllData();
+  }, [user]);
 
   // Borrow a book
   const handleBorrow = async (bookId) => {
     if (!currentUserId) return toast.error("⚠️ User not logged in!");
 
-    // Check if already borrowed
     if (borrowedBooks.some((b) => b.bookId === bookId)) {
       return toast.info("⚠️ You have already borrowed this book!");
     }
@@ -101,7 +83,7 @@ useEffect(() => {
       );
       toast.success(res.data);
 
-      // Update book count locally
+      // Update book count instantly
       setBooks((prevBooks) =>
         prevBooks.map((book) =>
           book.bookId === bookId
@@ -110,7 +92,7 @@ useEffect(() => {
         )
       );
 
-      // Add to borrowedBooks state
+      // Add to borrowed list
       const borrowedBook = books.find((book) => book.bookId === bookId);
       if (borrowedBook) {
         setBorrowedBooks((prev) => [
@@ -119,6 +101,7 @@ useEffect(() => {
         ]);
       }
     } catch (err) {
+      console.error("❌ Error borrowing book:", err);
       toast.error(err.response?.data || "❌ Error borrowing book");
     }
   };
@@ -126,81 +109,96 @@ useEffect(() => {
   if (!user) return <p>Loading user info...</p>;
   if (loading) return <p>Loading books...</p>;
 
-  // Filter books by search and category
+  // Filter books
   const filteredBooks = books.filter((book) => {
-    const matchesSearch = book.bookName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || book.bookCategory === selectedCategory;
+    const matchesSearch = book.bookName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || book.bookCategory === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <>
-      <div className="borrow-page">
-        <nav className="bb-navbar"></nav>
-        <ToastContainer position="top-right" autoClose={3000} />
-        <h2 className="bb-page-title">Book To Borrow</h2>
+    <div className="borrow-page">
+      <ToastContainer position="top-right" autoClose={3000} />
+<h2 className="bb-page-title">📚 All Books</h2>
 
-        {/* Search & Category Filter */}
-        <div className="bb-filters">
-          <input
-            type="text"
-            className="bb-search-bar"
-            placeholder="Search book by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <select
-            className="bb-category-filter"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Search & Filter */}
+      <div className="bb-filters">
+        <input
+          type="text"
+          className="bb-search-bar"
+          placeholder="Search book by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-        {/* Book Cards */}
-        <div className="bb-cards-container">
-          {filteredBooks.length > 0 ? (
-            filteredBooks.map((book) => (
-              <div
-                key={book.bookId}
-                className={`bb-card ${
-                  borrowedBooks.some((b) => b.bookId === book.bookId) ? "borrowed" : ""
-                }`}
-              >
-                <img src={book.image} alt={book.bookName} className="bb-card-img" />
-                <div className="bb-card-overlay">
-                  <h3>{book.bookName}</h3>
-                  <p>Author: {book.author}</p>
-                  <p>Available: {book.bookCount}</p>
-                  <p>Category: {book.bookCategory}</p>
-                  <button
-                    className="bb-card-btn"
-                    disabled={
-                      book.bookCount <= 0 ||
-                      borrowedBooks.some((b) => b.bookId === book.bookId)
-                    }
-                    onClick={() => handleBorrow(book.bookId)}
-                  >
-                    {borrowedBooks.some((b) => b.bookId === book.bookId)
-                      ? "Borrowed"
-                      : book.bookCount > 0
-                      ? "Borrow"
-                      : "Not Available"}
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No books found</p>
-          )}
-        </div>
+        <select
+          className="bb-category-filter"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
       </div>
-    </>
+
+      {/* Masonry Layout */}
+      <div className="bb-masonry">
+        {filteredBooks.length > 0 ? (
+          filteredBooks.map((book) => (
+            <div
+              key={book.bookId}
+              className={`bb-masonry-card ${
+                borrowedBooks.some((b) => b.bookId === book.bookId)
+                  ? "borrowed"
+                  : ""
+              }`}
+            >
+              <img
+                src={
+                  book.imageUrl?.startsWith("http")
+                    ? book.imageUrl
+                    : `http://localhost:8080/Uploads/Images/${book.imageUrl}`
+                }
+                alt={book.bookName}
+                className="bb-card-img"
+                onError={(e) => {
+                  e.target.src =
+                    "http://localhost:8080/Uploads/Images/default.jpg";
+                }}
+              />
+              <div className="bb-card-overlay">
+                <h3>{book.bookName}</h3>
+                <p>Author: {book.author}</p>
+                <p>Available: {book.bookCount}</p>
+                <p>Category: {book.bookCategory}</p>
+                <button
+                  className="bb-card-btn"
+                  disabled={
+                    book.bookCount <= 0 ||
+                    borrowedBooks.some((b) => b.bookId === book.bookId)
+                  }
+                  onClick={() => handleBorrow(book.bookId)}
+                >
+                  {borrowedBooks.some((b) => b.bookId === book.bookId)
+                    ? "Borrowed"
+                    : book.bookCount > 0
+                    ? "Borrow"
+                    : "Not Available"}
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No books found</p>
+        )}
+      </div>
+    </div>
   );
 };
 
