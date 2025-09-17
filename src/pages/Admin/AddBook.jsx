@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
-import "./AddBook.css"; // make sure to create this file
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./AddBook.css";
 
 const AddBook = ({ onBookAdded }) => {
   const [book, setBook] = useState({
@@ -14,16 +13,41 @@ const AddBook = ({ onBookAdded }) => {
     bookCategory: "",
   });
 
+  const [file, setFile] = useState(null); // for image file
+
   const handleChange = (e) => {
     setBook({ ...book, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // store file
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await axios.post("http://localhost:8080/api/books/add", book);
+      const formData = new FormData();
+      formData.append("file", file); // backend should expect "file"
+      formData.append("title", book.bookName);
+      formData.append("author", book.author);
+      formData.append("isbn", book.isbn);
+      formData.append("count", book.bookCount);
+      formData.append("category", book.bookCategory);
+
+      await axios.post("http://localhost:8080/api/books/add", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       toast.success(`Book '${book.bookName}' added successfully!`);
-      setBook({ bookName: "", author: "", isbn: "", bookCount: 1, category: "" });
+      setBook({
+        bookName: "",
+        author: "",
+        isbn: "",
+        bookCount: 1,
+        bookCategory: "",
+      });
+      setFile(null);
       if (onBookAdded) onBookAdded();
     } catch (err) {
       console.error(err);
@@ -76,6 +100,15 @@ const AddBook = ({ onBookAdded }) => {
           placeholder="Category"
           required
         />
+
+        {/* File Upload */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          required
+        />
+
         <button type="submit">Add Book</button>
       </form>
       <ToastContainer position="top-center" autoClose={3000} />

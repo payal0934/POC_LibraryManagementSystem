@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "../User/BorrowBook.css";
 import { FaTrash } from "react-icons/fa";
 
+
 const ViewAllBooks = () => {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,7 +25,7 @@ const ViewAllBooks = () => {
       setBooks(res.data.data || res.data);
     } catch (err) {
       console.error("❌ Error fetching books:", err);
-      toast.error("❌ Failed to fetch books");
+      toast.error(" Failed to fetch books");
     }
   };
 
@@ -61,7 +62,7 @@ const ViewAllBooks = () => {
   return (
     <div className="borrow-page">
       <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="bb-page-title">📚 All Books</h2>
+      <h2 className="bb-page-title"> Update Books</h2>
 
       {/* Search + Filter */}
       <div className="bb-filters">
@@ -97,7 +98,7 @@ const ViewAllBooks = () => {
                 className="bb-card-img"
                 onError={(e) => {
                   console.error(
-                    `❌ Image not found for bookId=${book.bookId} (${book.bookName}), using default`
+                    ` Image not found for bookId=${book.bookId} (${book.bookName}), using default`
                   );
                   e.target.src =
                     "http://localhost:8080/Uploads/Images/default.jpg";

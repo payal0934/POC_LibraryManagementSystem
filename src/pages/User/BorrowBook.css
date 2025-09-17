@@ -3,7 +3,8 @@
 /* Page container */
 .borrow-page {
   padding: 20px;
-  background: #111;
+/* background: linear-gradient(135deg, rgb(92, 68, 57), rgb(139, 115, 85), rgb(220, 193, 138)); */
+background-color: #503b33;
   min-height: 100vh;
   color: #fff;
 }
@@ -31,46 +32,59 @@
 
 
 
-
-.bb-search-bar,
-.bb-category-filter {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-}
 .bb-page-title{
-  /* padding: 20px; */
+  padding: 20px;
 font-weight: 400px;
 font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ;
 color: #ddd;
 align-items: center;
 }
 .bb-masonry {
-  column-count: 4; /* Pinterest columns */
-  column-gap: 15px;
+  column-count: 5; /* Pinterest columns */
+  column-gap: 25px;
+   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+
+  /* Size */
+  width: 91%;              /* take 90% of page */
+  max-width: 2000px;       /* don’t stretch too wide */
+  padding: 70px;
+
+  /* Centering */
+  margin: 50px auto;          /* center horizontally */
+
+  /* Border + Glow */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  box-shadow: inset 0 0 20px rgba(245, 214, 155, 0.3);
 }
 
 .bb-masonry-card {
   position: relative;
-  margin-bottom: 8px;
+  margin-bottom: 25px;
   break-inside: avoid;
   overflow: hidden;
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.3s ease;
+  width: 200px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 2);
+ 
+  
 }
 
 .bb-masonry-card:hover {
   transform: scale(1.05);
   z-index: 2;
+   /* background: rgba(0, 0, 0, 0.5); */
 }
 
 .bb-card-img {
   width: 100%;
   display: block;
   border-radius: 12px;
+  object-fit: cover;
 }
 
 .bb-card-overlay {
@@ -135,16 +149,6 @@ align-items: center;
   height: 50px;
 }
 
-/* Filters */
-.bb-filters {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 50px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
-
 .bb-search-bar {
   padding: 10px 15px;
   border-radius: 25px;
@@ -161,17 +165,6 @@ align-items: center;
   color: #ddd;
 }
 
-/* .bb-category-filter {
-  padding: 10px 15px;
-  border-radius: 25px;
-  border: none;
-  outline: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  font-size: 14px;
-  backdrop-filter: blur(10px);
-  cursor: pointer;
-} */
 
 /* Cards container */
 .bb-cards-container {
@@ -196,6 +189,7 @@ align-items: center;
 .bb-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+ 
 }
 
 /* Book already borrowed */
@@ -254,21 +248,22 @@ align-items: center;
   color: #fff;
 }
 
-.bb-card-btn:disabled {
+/* .bb-card-btn:disabled {
   background: #aaa;
   color: #fff;
   cursor: not-allowed;
-}
+} */
 /* Shared capsule style */
 .bb-search-bar,
 .bb-category-filter {
-  padding: 12px 18px;
+  padding: 15px 25px;
   border-radius: 999px; /* capsule */
   border: 1px solid rgba(255, 255, 255, 0.25);
   outline: none;
   width: 260px;
   font-size: 15px;
   font-weight: 500;
+  
 
   /* Glassmorphism */
   background: rgba(255, 255, 255, 0.1);
@@ -276,7 +271,7 @@ align-items: center;
   -webkit-backdrop-filter: blur(15px) saturate(180%);
 
   /* Subtle inset for depth */
-  box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.25),
+  box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.50),
               inset -2px -2px 4px rgba(0, 0, 0, 0.15);
 
   color: #fff;
@@ -300,7 +295,7 @@ align-items: center;
   transform: scale(1.02);
 }
 
-/* Dropdown tweaks */
+
 .bb-category-filter {
   appearance: none;
   -webkit-appearance: none;
@@ -308,7 +303,7 @@ align-items: center;
   cursor: pointer;
   background-image: none; /* remove default arrow */
   position: relative;
-}
+} 
 
 /* Options inside dropdown */
 .bb-category-filter option {
@@ -344,6 +339,61 @@ align-items: center;
 .bb-delete-btn:hover {
   background: rgb(237, 91, 91);
   transform: scale(1.1);
+}
+
+.bb-page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 30px 0 50px 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  /* Futuristic gradient text */
+  background: linear-gradient(90deg, #ff9a9e, #fad0c4, #fad390, #f6d365);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Glow + depth */
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+
+  /* Gradient moving animation */
+  animation: gradientShift 5s ease infinite, fadeInDown 1s ease forwards;
+  position: relative;
+}
+
+/* Underline animation */
+.bb-page-title::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #ffb347, #ff416c);
+  border-radius: 2px;
+  animation: underlineGrow 1.5s ease forwards;
+}
+
+/* Animate gradient movement */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Smooth fade down */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Underline grow effect */
+@keyframes underlineGrow {
+  from { width: 0; opacity: 0; }
+  to   { width: 80px; opacity: 1; }
 }
 
 

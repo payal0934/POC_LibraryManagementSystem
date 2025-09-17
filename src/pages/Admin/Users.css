@@ -1,0 +1,164 @@
+/* Container */
+.bb-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* User Card */
+.user-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Avatar */
+.user-avatar {
+  font-size: 70px;
+  color: #cdb762;
+  margin-bottom: 10px;
+}
+
+/* Name */
+.user-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f9f9f9;
+  margin: 5px 0;
+}
+
+/* Role */
+.user-role {
+  font-size: 0.95rem;
+  color: #ddd;
+  margin-bottom: 15px;
+}
+
+/* Active/Inactive dot */
+.user-status-dot {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.user-status-dot.active {
+  background-color: #2ecc71;
+}
+
+.user-status-dot.inactive {
+  background-color: #e74c3c;
+}
+
+/* Editable input for name */
+.user-name-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 10px 0;
+  text-align: center;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.user-name-input:focus {
+  outline: none;
+  border: 1px solid #ffb347;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px rgba(255, 200, 100, 0.6);
+}
+
+/* Buttons */
+.user-update-btn,
+.user-edit-btn,
+.user-cancel-btn,
+.user-delete-btn {
+  padding: 8px 14px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Save */
+.user-update-btn {
+  background: #e50914;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.user-update-btn:hover {
+  background: #f6121d;
+}
+
+/* Edit */
+.user-edit-btn {
+  background: #3498db;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.user-edit-btn:hover {
+  background: #2980b9;
+}
+
+/* Cancel */
+.user-cancel-btn {
+  background: #7f8c8d;
+  color: #fff;
+}
+
+.user-cancel-btn:hover {
+  background: #95a5a6;
+}
+
+/* Delete */
+.user-delete-btn {
+  background: #ffffff;
+  color: #240101;
+}
+
+.user-delete-btn:hover {
+  background: #c0392b;
+}
+
+/* User action buttons container */
+.user-action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* Active toggle checkbox */
+.user-card input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-left: 5px;
+  cursor: pointer;
+}

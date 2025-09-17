@@ -16,7 +16,7 @@ const BorrowBook = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
   // Fetch books
   const fetchBooks = async () => {
     try {
@@ -30,8 +30,8 @@ const BorrowBook = () => {
       ];
       setCategories(uniqueCategories);
     } catch (err) {
-      console.error("❌ Error fetching books:", err);
-      toast.error("❌ Failed to fetch books");
+      console.error(" Error fetching books:", err);
+      toast.error(" Failed to fetch books");
     }
   };
 
@@ -44,8 +44,8 @@ const BorrowBook = () => {
       );
       setBorrowedBooks(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error("❌ Error fetching borrowed books:", err);
-      toast.error("❌ Failed to fetch borrowed books");
+      console.error(" Error fetching borrowed books:", err);
+      toast.error(" Failed to fetch borrowed books");
     }
   };
 
@@ -59,8 +59,8 @@ const BorrowBook = () => {
         await fetchBooks();
         await fetchBorrowedBooks();
       } catch (err) {
-        console.error("❌ Error fetching data:", err);
-        toast.error("❌ Failed to fetch data");
+        console.error(" Error fetching data:", err);
+        toast.error(" Failed to fetch data");
       } finally {
         setLoading(false);
       }
@@ -71,10 +71,10 @@ const BorrowBook = () => {
 
   // Borrow a book
   const handleBorrow = async (bookId) => {
-    if (!currentUserId) return toast.error("⚠️ User not logged in!");
+    if (!currentUserId) return toast.error(" User not logged in!");
 
     if (borrowedBooks.some((b) => b.bookId === bookId)) {
-      return toast.info("⚠️ You have already borrowed this book!");
+      return toast.info(" You have already borrowed this book!");
     }
 
     try {
@@ -101,8 +101,8 @@ const BorrowBook = () => {
         ]);
       }
     } catch (err) {
-      console.error("❌ Error borrowing book:", err);
-      toast.error(err.response?.data || "❌ Error borrowing book");
+      console.error(" Error borrowing book:", err);
+      toast.error(err.response?.data || " Error borrowing book");
     }
   };
 
@@ -118,11 +118,29 @@ const BorrowBook = () => {
       selectedCategory === "All" || book.bookCategory === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+  // Fetch latest books
+const fetchLatestBooks = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/books/latest");
+    const latestBooks = res.data.data || [];
+    setBooks(latestBooks);
+
+    const uniqueCategories = [
+      "All",
+      ...new Set(latestBooks.map((b) => b.bookCategory)),
+    ];
+    setCategories(uniqueCategories);
+  } catch (err) {
+    console.error("Error fetching latest books:", err);
+    toast.error("Failed to fetch latest books");
+  }
+};
+
 
   return (
     <div className="borrow-page">
       <ToastContainer position="top-right" autoClose={3000} />
-<h2 className="bb-page-title">📚 All Books</h2>
+<h2 className="bb-page-title"> Start Reading Today</h2>
 
       {/* Search & Filter */}
       <div className="bb-filters">
