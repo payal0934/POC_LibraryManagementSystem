@@ -17,15 +17,9 @@ const UserHomePage = () => {
       img: borrowBookImg,
       path: "/borrow-books",
     },
+
     {
       id: 2,
-      title: "Return Shelf",
-      desc: "Return books you have borrowed.",
-      img: returnBookImg,
-      path: "/return-book",
-    },
-    {
-      id: 3,
       title: "Issued Books",
       desc: "History Which You Created.",
       img: borrowedHistoryImg,

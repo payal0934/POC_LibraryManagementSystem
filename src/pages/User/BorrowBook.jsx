@@ -5,6 +5,7 @@ import { AuthContext } from "../Auth/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../User/BorrowBook.css";
+import { differenceInDays } from "date-fns";
 
 const BorrowBook = () => {
   const { user } = useContext(AuthContext);
@@ -16,40 +17,47 @@ const BorrowBook = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Fetch books
+
+  // ✅ Fetch books
   const fetchBooks = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/books");
-      const bookArray = res.data.data || [];
-      setBooks(bookArray);
+      const bookArray = res.data.data || res.data || [];
+
+      // Sort by createdAt descending (newest first)
+      const sortedBooks = bookArray.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      setBooks(sortedBooks);
 
       const uniqueCategories = [
         "All",
-        ...new Set(bookArray.map((b) => b.bookCategory)),
+        ...new Set(sortedBooks.map((b) => b.bookCategory)),
       ];
       setCategories(uniqueCategories);
     } catch (err) {
-      console.error(" Error fetching books:", err);
-      toast.error(" Failed to fetch books");
+      console.error("❌ Error fetching books:", err);
+      toast.error("Failed to fetch books");
     }
   };
 
-  // Fetch borrowed books
+  // ✅ Fetch borrowed books
   const fetchBorrowedBooks = async () => {
     if (!currentUserId) return;
     try {
       const res = await axios.get(
         `http://localhost:8080/api/library/borrowed/${currentUserId}`
       );
-      setBorrowedBooks(Array.isArray(res.data) ? res.data : []);
+      const borrowedArray = res.data.data || res.data || [];
+      setBorrowedBooks(Array.isArray(borrowedArray) ? borrowedArray : []);
     } catch (err) {
-      console.error(" Error fetching borrowed books:", err);
-      toast.error(" Failed to fetch borrowed books");
+      console.error("❌ Error fetching borrowed books:", err);
+      toast.error("Failed to fetch borrowed books");
     }
   };
 
-  // Load books + borrowed books
+  // ✅ Load books + borrowed books
   useEffect(() => {
     const fetchAllData = async () => {
       if (!user) return;
@@ -59,8 +67,8 @@ const BorrowBook = () => {
         await fetchBooks();
         await fetchBorrowedBooks();
       } catch (err) {
-        console.error(" Error fetching data:", err);
-        toast.error(" Failed to fetch data");
+        console.error("❌ Error fetching data:", err);
+        toast.error("Failed to fetch data");
       } finally {
         setLoading(false);
       }
@@ -69,19 +77,19 @@ const BorrowBook = () => {
     fetchAllData();
   }, [user]);
 
-  // Borrow a book
+  // ✅ Borrow a book
   const handleBorrow = async (bookId) => {
-    if (!currentUserId) return toast.error(" User not logged in!");
+    if (!currentUserId) return toast.error("User not logged in!");
 
     if (borrowedBooks.some((b) => b.bookId === bookId)) {
-      return toast.info(" You have already borrowed this book!");
+      return toast.info("You have already borrowed this book!");
     }
 
     try {
       const res = await axios.post(
         `http://localhost:8080/api/books/borrow/${bookId}?userId=${currentUserId}`
       );
-      toast.success(res.data);
+      toast.success(res.data?.message || "Book borrowed successfully!");
 
       // Update book count instantly
       setBooks((prevBooks) =>
@@ -92,7 +100,7 @@ const BorrowBook = () => {
         )
       );
 
-      // Add to borrowed list
+      // Add to borrowed list instantly
       const borrowedBook = books.find((book) => book.bookId === bookId);
       if (borrowedBook) {
         setBorrowedBooks((prev) => [
@@ -101,48 +109,31 @@ const BorrowBook = () => {
         ]);
       }
     } catch (err) {
-      console.error(" Error borrowing book:", err);
-      toast.error(err.response?.data || " Error borrowing book");
+      console.error("❌ Error borrowing book:", err);
+      toast.error(err.response?.data || "Error borrowing book");
     }
   };
 
   if (!user) return <p>Loading user info...</p>;
   if (loading) return <p>Loading books...</p>;
 
-  // Filter books
+  // ✅ Filter books
   const filteredBooks = books.filter((book) => {
     const matchesSearch = book.bookName
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesCategory =
       selectedCategory === "All" || book.bookCategory === selectedCategory;
+
     return matchesSearch && matchesCategory;
   });
-  // Fetch latest books
-const fetchLatestBooks = async () => {
-  try {
-    const res = await axios.get("http://localhost:8080/api/books/latest");
-    const latestBooks = res.data.data || [];
-    setBooks(latestBooks);
-
-    const uniqueCategories = [
-      "All",
-      ...new Set(latestBooks.map((b) => b.bookCategory)),
-    ];
-    setCategories(uniqueCategories);
-  } catch (err) {
-    console.error("Error fetching latest books:", err);
-    toast.error("Failed to fetch latest books");
-  }
-};
-
 
   return (
     <div className="borrow-page">
       <ToastContainer position="top-right" autoClose={3000} />
-<h2 className="bb-page-title"> Start Reading Today</h2>
+      <h2 className="bb-page-title">Start Reading Today</h2>
 
-      {/* Search & Filter */}
+      {/* 🔍 Search & Filter */}
       <div className="bb-filters">
         <input
           type="text"
@@ -165,7 +156,7 @@ const fetchLatestBooks = async () => {
         </select>
       </div>
 
-      {/* Masonry Layout */}
+      {/* 📚 Masonry Layout */}
       <div className="bb-masonry">
         {filteredBooks.length > 0 ? (
           filteredBooks.map((book) => (
@@ -175,8 +166,16 @@ const fetchLatestBooks = async () => {
                 borrowedBooks.some((b) => b.bookId === book.bookId)
                   ? "borrowed"
                   : ""
-              }`}
+              } ${book.bookCount === 0 ? "out-of-stock" : ""}`}
             >
+              {/* Ribbon: Latest OR Out of Stock */}
+              {book.bookCount === 0 ? (
+                <span className="bb-ribbon out">Out of Stock</span>
+              ) : book.createdAt &&
+                differenceInDays(new Date(), new Date(book.createdAt)) <= 2 ? (
+                <span className="bb-ribbon new">Latest</span>
+              ) : null}
+
               <img
                 src={
                   book.imageUrl?.startsWith("http")
@@ -198,7 +197,7 @@ const fetchLatestBooks = async () => {
                 <button
                   className="bb-card-btn"
                   disabled={
-                    book.bookCount <= 0 ||
+                    book.bookCount === 0 ||
                     borrowedBooks.some((b) => b.bookId === book.bookId)
                   }
                   onClick={() => handleBorrow(book.bookId)}

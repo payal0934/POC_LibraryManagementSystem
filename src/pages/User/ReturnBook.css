@@ -1,4 +1,37 @@
 
+.returnbook-title {
+
+  font-size: 3rem; /* bigger for impact */
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  /* Gradient text */
+  background: linear-gradient(90deg, #f5c27b, #d4a373, #f5f1e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Subtle shadow for depth */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+
+  /* Animation */
+  animation: fadeInScale 1.2s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInScale {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .returnbook-page {
   min-height: 100vh;
   padding: 3rem 1rem;

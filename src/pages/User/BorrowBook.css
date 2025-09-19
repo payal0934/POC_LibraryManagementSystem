@@ -39,6 +39,8 @@ font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ;
 color: #ddd;
 align-items: center;
 }
+
+
 .bb-masonry {
   column-count: 5; /* Pinterest columns */
   column-gap: 25px;
@@ -55,9 +57,10 @@ align-items: center;
   margin: 50px auto;          /* center horizontally */
 
   /* Border + Glow */
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 18px;
-  box-shadow: inset 0 0 20px rgba(245, 214, 155, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.26);
+  border-radius: 19px;
+  box-shadow: inset 0 0 40px rgba(244, 222, 183, 0.489);
+  /* background-color: #453936; */
 }
 
 .bb-masonry-card {
@@ -173,7 +176,37 @@ align-items: center;
   gap: 20px;
   width: 100%;
   max-width: 1200px;
+  
 }
+
+
+.user-card {
+  background-color: #787550 !important;  /* white card */
+  border-radius: 10px;
+  padding: 16px;
+  margin: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  color: #000 !important;  /* force dark text */
+}
+
+.user-card p,
+.user-card span,
+.user-card input,
+.user-card label {
+  color: #000 !important;  /* force black text */
+}
+
+.user-name-input {
+  background-color: #f9f9f9 !important;
+  color: #000 !important;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+}
+
+
+
+
+
 
 /* Card */
 .bb-card {
@@ -215,6 +248,11 @@ align-items: center;
   color: #fff;
   font-size: 14px;
 }
+
+.bb-card-overlay:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
 
 .bb-card-overlay h3 {
   margin: 0;
@@ -323,7 +361,7 @@ align-items: center;
   bottom: 10px;
   right: 10px;
   background: rgba(249, 248, 248, 0.9);
-  color: rgb(0, 0, 0);
+  color: black;
   border: none;
   border-radius: 50%;
   width: 36px;
@@ -342,10 +380,10 @@ align-items: center;
 }
 
 .bb-page-title {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 800;
   text-align: center;
-  margin: 30px 0 50px 0;
+  margin: 2px 0 50px 0;
   letter-spacing: 2px;
   text-transform: uppercase;
 
@@ -397,3 +435,234 @@ align-items: center;
 }
 
 
+/* Ribbon style badge */
+.bb-ribbon {
+  position: absolute;
+  top: 12px;
+  left: -12px;
+  background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7);
+  color: #000000;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  overflow: hidden; /* ✅ Important for wave effect */
+}
+
+/* 🔥 Add shining wave effect */
+.bb-ribbon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%; /* start outside */
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine 2s infinite;
+}
+
+
+/* Out of Stock Ribbon */
+.bb-ribbon.out {
+  position: absolute;
+  top: 12px;
+  left: -12px;
+  background: linear-gradient(45deg, #908783, #6a6567, #6228d7);
+  color: #fffafa;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  /* transform: rotate(-45deg); */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  /* overflow: hidden;  */
+}
+
+/* Dim the card when out of stock */
+.bb-masonry-card.out-of-stock {
+  opacity: 0.6;
+  pointer-events: none; /* prevent accidental clicks */
+}
+
+
+/* ✨ Keyframes for wave */
+@keyframes shine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+
+
+.bb-edit-btn {
+  position: absolute;
+  bottom: 50px;  /* place above delete */
+  right: 10px;
+  background: rgba(249, 248, 248, 0.9);
+  color: black;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.bb-edit-btn:hover {
+  background: #99bcdf;
+  color: rgb(255, 255, 255);
+}
+/* Modal backdrop */
+.bb-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal box */
+.bb-modal-content {
+  background: #1f1f2e;
+  color: #f9f9f9;
+  padding: 30px 25px;
+  border-radius: 16px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  text-align: center;
+  animation: slideUp 0.4s ease;
+}
+
+/* Modal header */
+.bb-modal-content h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  letter-spacing: 0.5px;
+  color: #ffcc00;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+/* Inputs */
+.bb-modal-content input[type="text"],
+.bb-modal-content input[type="number"],
+.bb-modal-content input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #2c2c3c;
+  color: #f9f9f9;
+  font-size: 1rem;
+  transition: border 0.2s, background 0.2s;
+}
+
+.bb-modal-content input[type="text"]:focus,
+.bb-modal-content input[type="number"]:focus,
+.bb-modal-content input[type="file"]:focus {
+  outline: none;
+  border: 1px solid #ffcc00;
+  background: #38384d;
+}
+
+/* Preview image */
+.bb-modal-content img {
+  border: 2px solid #ffcc00;
+  padding: 2px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* Buttons container */
+.bb-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Buttons */
+.bb-modal-actions button {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bb-modal-actions button[type="submit"] {
+  background: #ffcc00;
+  color: #1f1f2e;
+}
+
+.bb-modal-actions button[type="submit"]:hover {
+  background: #ffdb4d;
+  transform: translateY(-2px);
+}
+
+.bb-modal-actions button[type="button"] {
+  background: #44445c;
+  color: #f9f9f9;
+}
+
+.bb-modal-actions button[type="button"]:hover {
+  background: #5c5c7a;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.bb-icon-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: absolute; /* relative to the overlay */
+  bottom: 10px;
+  right: 10px;
+}
+.bb-edit-btn, .bb-delete-btn {
+  position: static; /* remove absolute */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

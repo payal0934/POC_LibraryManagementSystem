@@ -10,7 +10,7 @@ import ViewAllBooks from "./pages/Admin/ViewAllBooks";
 import AddBook from "./pages/Admin/AddBook";
 // import Profile from "./pages/Profile";
 import BorrowBook from "./pages/User/BorrowBook";
-import ReturnBook from "./pages/User/ReturnBook";
+// import ReturnBook from "./pages/User/ReturnBook";
 // import MyBorrowedBooks from "./pages/User/MyBorrowedBook";
 import Loader from "./context/Loader";
 import UserHomePage from "./pages/User/UserHomePage";
@@ -56,7 +56,7 @@ function App() {
             {/* User */}
             <Route path="/user" element={<UserHomePage />} />
             <Route path="/borrow-books" element={<BorrowBook />} />
-            <Route path="/return-book" element={<ReturnBook />} />
+            {/* <Route path="/return-book" element={<ReturnBook />} /> */}
             <Route path="/borrowed-history" element={<BorrowdHistory />} />
           </Route>
 

@@ -113,18 +113,19 @@
 }
 
 .user-update-btn:hover {
-  background: #f6121d;
+  background: #93161c;
 }
 
 /* Edit */
 .user-edit-btn {
-  background: #3498db;
+  background: #000000;
   color: #fff;
   margin-right: 5px;
 }
 
 .user-edit-btn:hover {
-  background: #2980b9;
+  background: #dac829;
+  /* color: rgb(40, 200, 187); */
 }
 
 /* Cancel */
