@@ -4,20 +4,32 @@ public class UserDTO {
     private int userId;
     private String userName;
     private String role;
-
+    private boolean active;
     public UserDTO() {}
 
-    public UserDTO(int userId, String userName, String role) {
-        this.userId = userId;
-        this.userName = userName;
-        this.role = role;
-    }
+//    public UserDTO(int userId, String userName, String role, boolean active) {
+//		
+//		this.userId = userId;
+//		this.userName = userName;
+//		this.role = role;
+//		this.active = active;
+//	}
+
+
 
     // Getters and Setters
     public int getUserId() {
         return userId;
     }
-    public void setUserId(int userId) {
+    public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public void setUserId(int userId) {
         this.userId = userId;
     }
     public String getUserName() {

@@ -56,16 +56,33 @@ public class UserService {
         return userRepository.findByUserNameAndPassword(userName, password).isPresent();
     }
 
-    
-    
-    public UserDTO convertToDTO(UserEntity user)
-    {
-    	UserDTO dto=new UserDTO();
-    	dto.setUserId(user.getUserId());
-    	dto.setUserName(user.getUserName());
-    	dto.setRole(user.getRole());
-    	return dto;
+    // Update user name and status
+    public UserEntity updateUser(int id, String name, Boolean active) {
+        Optional<UserEntity> optionalUser = userRepository.findById(id);
+        if (!optionalUser.isPresent()) {
+            throw new RuntimeException("User not found");
+        }
+        UserEntity user = optionalUser.get();
+        if (name != null && !name.isEmpty()) {
+            user.setUserName(name);
+        }
+        if (active != null) {
+            user.setActive(active);
+        }
+        return userRepository.save(user);
     }
+
+    
+    public UserDTO convertToDTO(UserEntity user) {
+        UserDTO dto = new UserDTO();
+        dto.setUserId(user.getUserId());
+        dto.setUserName(user.getUserName());
+        dto.setRole(user.getRole());
+        dto.setActive(user.isActive()); // must include active
+        return dto;
+    }
+
+
     
     
 }

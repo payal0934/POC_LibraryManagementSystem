@@ -1,5 +1,6 @@
 package com.sb.EntityManager;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,14 @@ import jakarta.persistence.*;
 @Table(name = "book") 
 public class BookEntity {
 
-    @Id
+    public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bookId;
 
@@ -33,6 +41,11 @@ public class BookEntity {
     @Column(name = "imageUrl",nullable = true)
     private String imageUrl;
 
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    
+    
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<LibraryEntity> borrowRecords = new ArrayList<>();

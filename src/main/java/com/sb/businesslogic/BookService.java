@@ -3,6 +3,7 @@ package com.sb.businesslogic;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,10 +62,12 @@ return addBook(book);
 }
 
 
-
+    public List<BookEntity> getLatestBooks() {
+        return bookRepository.findAllByOrderByCreatedAtDesc();
+    }
     
     public List<BookEntity> getAllBooks() {
-        return bookRepository.findByBookCountGreaterThan(0);
+    	return bookRepository.findAll();
     }
 
     public Optional<BookEntity> getBookById(int id) {
@@ -83,53 +86,88 @@ return addBook(book);
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
         dto.setBookCategory(book.getBookCategory());
-        dto.setImageUrl(book.getImageUrl()); // ✅
+        dto.setImageUrl(book.getImageUrl());
+        dto.setCreatedAt(book.getCreatedAt());   // ✅ Add this line
         return dto;
     }
-    
-    
-    
-    public BookEntity updateBook(int id, BookEntity bookDetails) {
-        BookEntity book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id " + id));
 
-        book.setBookName(bookDetails.getBookName());
-        book.setBookCount(bookDetails.getBookCount());
-        book.setAuthor(bookDetails.getAuthor());
-        book.setIsbn(bookDetails.getIsbn());
-        book.setBookCategory(bookDetails.getBookCategory());
-        book.setImageUrl(bookDetails.getImageUrl()); // ✅ save image URL
+    
+    public BookEntity updateBookWithImage(int id, String bookName, String author, long isbn, int bookCount, String bookCategory, MultipartFile imageFile) throws Exception {
+        BookEntity book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+
+        book.setBookName(bookName);
+        book.setAuthor(author);
+        book.setIsbn(isbn);
+        book.setBookCount(bookCount);
+        book.setBookCategory(bookCategory);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String uploadDir = "Uploads/Images/";
+            String fileName = imageFile.getOriginalFilename();
+            Path path = Paths.get(uploadDir + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, imageFile.getBytes());
+            book.setImageUrl(fileName);
+        }
 
         return bookRepository.save(book);
     }
 
 
-    public String borrowBook(int bookId, int userId) {
-        Optional<BookEntity> bookOpt = bookRepository.findById(bookId);
-        Optional<UserEntity> userOpt = userRepository.findById(userId);
 
-        if (bookOpt.isEmpty() || userOpt.isEmpty()) {
-            return "❌ Book or User not found";
+    
+//    public BookEntity updateBook(int id, BookEntity bookDetails) {
+//        BookEntity book = bookRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Book not found with id " + id));
+//
+//        book.setBookName(bookDetails.getBookName());
+//        book.setBookCount(bookDetails.getBookCount());
+//        book.setAuthor(bookDetails.getAuthor());
+//        book.setIsbn(bookDetails.getIsbn());
+//        book.setBookCategory(bookDetails.getBookCategory());
+//        book.setImageUrl(bookDetails.getImageUrl()); // ✅ save image URL
+//
+//        return bookRepository.save(book);
+//    }
+
+
+    public boolean borrowBook(int bookId, int userId) {
+        // Find book and user properly
+        BookEntity book = bookRepository.findById(bookId).orElse(null);
+        UserEntity user = userRepository.findById(userId).orElse(null);
+
+        if (book == null || user == null) {
+            return false; // invalid book/user
         }
 
-        BookEntity book = bookOpt.get();
         if (book.getBookCount() <= 0) {
-            return "❌ Book not available";
+            return false; // no stock
+        }
+        boolean alreadyBorrowed = libraryRepository
+            .existsByBookBookIdAndUserUserIdAndReturnedFalse(bookId, userId);
+
+        if (alreadyBorrowed) {
+            return false; // prevent duplicate borrow
         }
 
-        LibraryEntity record = new LibraryEntity();
-        record.setBook(book);
-        record.setUser(userOpt.get());
-        record.setReturned(false);
-        record.setBorrowedDate(java.time.LocalDateTime.now());
-        record.setReturnedDate(null);
-        libraryRepository.save(record);
-
+        // Decrease count
         book.setBookCount(book.getBookCount() - 1);
         bookRepository.save(book);
 
-        return "✅ Book borrowed successfully!";
+        // Save in library
+        LibraryEntity library = new LibraryEntity();
+        library.setBook(book);
+        library.setUser(user);  // ✅ real user entity
+        library.setReturned(false);
+        library.setBorrowedDate(LocalDateTime.now());
+        libraryRepository.save(library);
+
+        return true;
     }
+
+
+
 
     public boolean returnBook(int bookId, int userId) {
         Optional<LibraryEntity> recordOpt =
@@ -137,8 +175,7 @@ return addBook(book);
 
         if (recordOpt.isPresent()) {
             LibraryEntity record = recordOpt.get();
-            record.setReturned(true);
-            record.setReturnedDate(java.time.LocalDateTime.now()); // <-- Corrected here
+            record.returnBook();  // ✅ your entity method
             libraryRepository.save(record);
 
             BookEntity book = record.getBook();
@@ -149,6 +186,8 @@ return addBook(book);
         }
         return false;
     }
+
+
 
 
     public List<BookEntity> getBorrowedBooksByUser(int userId) {

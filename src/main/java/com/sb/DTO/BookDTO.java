@@ -1,5 +1,7 @@
 package com.sb.DTO;
 
+import java.time.LocalDateTime;
+
 public class BookDTO {
     private int bookId;
     private String bookName;
@@ -8,7 +10,7 @@ public class BookDTO {
     private long isbn;
     private String bookCategory;
     private String imageUrl; 
-    
+    private LocalDateTime createdAt;
  
     public BookDTO() {}
 
@@ -16,19 +18,27 @@ public class BookDTO {
 
 
 
-	public BookDTO(int bookId, String bookName, int bookCount, String author, long isbn, String bookCategory,
-			String imageUrl) {
-		super();
-		this.bookId = bookId;
-		this.bookName = bookName;
-		this.bookCount = bookCount;
-		this.author = author;
-		this.isbn = isbn;
-		this.bookCategory = bookCategory;
-		this.imageUrl = imageUrl;
-	}
+    public BookDTO(int bookId, String bookName, int bookCount, String author, long isbn,
+            String bookCategory, String imageUrl, LocalDateTime createdAt) {
+ this.bookId = bookId;
+ this.bookName = bookName;
+ this.bookCount = bookCount;
+ this.author = author;
+ this.isbn = isbn;
+ this.bookCategory = bookCategory;
+ this.imageUrl = imageUrl;
+ this.createdAt = createdAt;
+}
 
 
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
 
 

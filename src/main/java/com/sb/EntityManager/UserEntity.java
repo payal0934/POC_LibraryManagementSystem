@@ -20,6 +20,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String role; // "user" or "admin"
 
+    private boolean active = true; 
+    
+    
     public UserEntity() {
     }
     public UserEntity(int userId) {
@@ -27,18 +30,31 @@ public class UserEntity {
     }
 
     // Constructor for user/admin
-    public UserEntity(String userName, String password, String role) {
-        this.userName = userName;
-        this.password = password;
-        this.role = role;
-    }
+   
 
     // Getters and setters
     public int getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public UserEntity( String userName, String password, String role, boolean active) {
+		
+		
+		this.userName = userName;
+		this.password = password;
+		this.role = role;
+		this.active = active;
+	}
+    
+    
+    
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	public void setUserId(int userId) {
         this.userId = userId;
     }
 

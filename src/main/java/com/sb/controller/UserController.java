@@ -36,13 +36,15 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signup(@RequestParam String userName,
                                                    @RequestParam String password,
-                                                   @RequestParam String role) {
+                                                   @RequestParam String role,
+                                                   @RequestParam Boolean active                                                 
+    		) {
         if (userRepository.findByUserName(userName).isPresent()) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Username already exists!"));
         }
 
-        UserEntity newUser = new UserEntity(userName, password, role);
+        UserEntity newUser = new UserEntity(userName, password, role,active);
         userRepository.save(newUser);
 
         return ResponseEntity.ok(ApiResponse.success("User registered successfully!", null));
@@ -103,4 +105,49 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(new ApiResponse<>("success", "User found", userService.convertToDTO(user)));
     }
+    
+    //Delete the user
+ // ✅ Delete user by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int id) {
+        // check if user exists
+        Optional<UserEntity> user = userService.getUserById(id);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("User not found"));
+        }
+
+        userService.deleteUser(id);
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
+    }
+
+    
+    
+ // Update user name and active status
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserDTO>> updateUser(
+            @PathVariable int id,
+            @RequestBody UserDTO userDTO) {
+
+        // Call service to update user
+        UserEntity updatedUser = userService.updateUser(
+                id, 
+                userDTO.getUserName(), 
+                userDTO.isActive()
+        );
+
+        // Convert to DTO
+        UserDTO response = new UserDTO();
+        response.setUserId(updatedUser.getUserId());
+        response.setUserName(updatedUser.getUserName());
+        response.setRole(updatedUser.getRole());
+        response.setActive(updatedUser.isActive());
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("success", "User updated successfully", response)
+        );
+    }
+
+
+    
 }

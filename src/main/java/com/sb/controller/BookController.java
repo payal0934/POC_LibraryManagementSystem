@@ -69,13 +69,34 @@ public class BookController {
 
     }
 
+@GetMapping("/latest")
+public List<BookEntity> getLatestBooks()
+{
+	return bookService.getLatestBooks();
+}
 
+@PutMapping("/update/{id}")
+public ResponseEntity<ApiResponse<BookDTO>> updateBook(
+        @PathVariable int id,
+        @RequestParam("bookName") String bookName,
+        @RequestParam("author") String author,
+        @RequestParam("isbn") long isbn,
+        @RequestParam("bookCount") int bookCount,
+        @RequestParam("bookCategory") String bookCategory,
+        @RequestParam(value = "image", required = false) MultipartFile imageFile) {
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable int id, @RequestBody BookEntity bookDetails) {
-        BookEntity updatedBook = bookService.updateBook(id, bookDetails);
-        return ResponseEntity.ok(bookService.convertToDto(updatedBook));
+    try {
+        BookEntity updatedBook = bookService.updateBookWithImage(id, bookName, author, isbn, bookCount, bookCategory, imageFile);
+        BookDTO dto = bookService.convertToDto(updatedBook);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Book updated successfully", dto));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(new ApiResponse<>("error", "Failed to update book: " + e.getMessage(), null));
     }
+}
+
+
+
 
 //    @GetMapping
 //    public ResponseEntity<List<BookDTO>> getAllBooks() {
@@ -126,9 +147,11 @@ public class BookController {
 
 
     @PostMapping("/borrow/{bookId}")
-    public ResponseEntity<String> borrowBook(@PathVariable int bookId, @RequestParam int userId) {
-        return ResponseEntity.ok(bookService.borrowBook(bookId, userId));
+    public ResponseEntity<Boolean> borrowBook(@PathVariable int bookId, @RequestParam int userId) {
+        boolean success = bookService.borrowBook(bookId, userId);
+        return ResponseEntity.ok(success);
     }
+
 
     @PostMapping("/return")
     public ResponseEntity<String> returnBook(@RequestParam int bookId, @RequestParam int userId) {
@@ -170,5 +193,8 @@ public class BookController {
                                      .toList();
         return ResponseEntity.ok(dtoList);
     }
+    
+    
+    
 
 }

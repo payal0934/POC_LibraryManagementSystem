@@ -1,5 +1,6 @@
 package com.sb.businesslogic;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import com.sb.EntityManager.LibraryEntity;
 import com.sb.EntityManager.UserEntity;
 import com.sb.repository.BookRepository;
 import com.sb.repository.LibraryRepository;
+import com.sb.repository.UserRepository;
 
 @Service
 public class LibraryService {
@@ -18,6 +20,8 @@ public class LibraryService {
     @Autowired
     private LibraryRepository libraryRepository;
 
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
 
@@ -62,23 +66,41 @@ public class LibraryService {
     
     
     public boolean borrowBook(int bookId, int userId) {
+        // Find book and user properly
         BookEntity book = bookRepository.findById(bookId).orElse(null);
-        if (book != null && book.getBookCount() > 0) {
-            // decrease count
-            book.setBookCount(book.getBookCount() - 1);
-            bookRepository.save(book);
+        UserEntity user = userRepository.findById(userId).orElse(null);
 
-            // save in library
-            LibraryEntity library = new LibraryEntity();
-            library.setBook(book);
-            library.setUser(new UserEntity(userId)); // ✅ FIX: associate user, not setId
-            library.setReturned(false);
-            libraryRepository.save(library);
-            return true;
+        if (book == null || user == null) {
+            return false; // invalid book/user
         }
-        return false;
+
+        if (book.getBookCount() <= 0) {
+            return false; // no stock
+        }
+
+        // ✅ Check if already borrowed and not returned
+        boolean alreadyBorrowed = libraryRepository
+            .existsByBookBookIdAndUserUserIdAndReturnedFalse(bookId, userId);
+
+        if (alreadyBorrowed) {
+            return false; // prevent duplicate borrow
+        }
+
+        // Decrease count
+        book.setBookCount(book.getBookCount() - 1);
+        bookRepository.save(book);
+
+        // Save in library
+        LibraryEntity library = new LibraryEntity();
+        library.setBook(book);
+        library.setUser(user);  // ✅ real user entity from DB
+        library.setReturned(false);
+        library.setBorrowedDate(LocalDateTime.now());
+        libraryRepository.save(library);
+
+        return true;
     }
-    
+
     
     //borrow book user can boorrow one book logic 
     
